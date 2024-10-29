@@ -1,0 +1,98 @@
+@mixin flex-center {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+@mixin flex-center-col {
+    @include flex-center;
+    flex-direction:column;
+}
+
+@mixin main-container {
+    width:100dvw;
+    height:100dvh;
+
+    overflow-x:hidden;
+    overflow-y:auto;
+
+    margin:0;
+    padding:0;
+}
+
+@mixin button-style {
+    padding:0.5rem 1rem;
+    border-radius:0px;
+    border:1px solid var(--border-color);
+    background-color:var(--background-dark);
+    color:var(--text-color);
+    font-family: 'Oxygen Mono', monospace;
+    &:hover {
+        cursor:pointer;
+        background-color:var(--background-color);
+    }
+}
+
+@mixin form-style {
+    
+    width:30rem;
+    margin: 2rem auto;
+    padding: 1rem;
+    margin-bottom:0;
+    background:var(--background-dark);
+    border-radius: 0px;
+    border: 1px solid var(--border-color);
+
+    @media screen and (max-width: 768px) {
+        width:calc(100% - 4rem);
+    }
+    
+    h2 {
+        margin-top:0;
+        margin-bottom: 1rem;
+        text-align:center;
+        font-size:1.4rem;
+        color:var(--text-color);
+    }
+    
+    input, textarea {
+        width: calc(100% - 1rem);
+        padding: 0.5rem;
+        margin-bottom: 1rem;
+        background:var(--background-color);
+        color:var(--text-color);
+        border: 1px solid var(--border-color);
+        border-radius: 0px;
+        resize: none;
+        font-size:0.8rem;
+        font-family: 'Oxygen Mono', monospace;
+
+        &:focus {
+            outline:none;
+        }
+    }
+    
+    textarea {
+        min-height: 150px;
+    }
+    
+    button {
+        width: 100%;
+        padding: 0.75rem;
+        background: var(--link-color);
+        color:var(--background-color);
+        border: none;
+        border-radius: 0;
+        cursor: pointer;
+        font-family: 'Oxygen Mono', monospace;
+    
+        &:disabled {
+            opacity:0.5;
+            cursor: not-allowed;
+        }
+    
+        &:hover:not(:disabled) {
+            filter:brightness(1.1);
+        }
+    }
+}

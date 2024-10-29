@@ -1,0 +1,13 @@
+@import './variables.module.scss';
+
+.main {
+    
+    @include main-container;
+
+    .about {
+        margin-top:8dvh;
+        padding:0 5rem;
+        color:var(--text-color);
+    }
+
+}

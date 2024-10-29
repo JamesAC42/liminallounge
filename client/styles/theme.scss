@@ -1,0 +1,47 @@
+:root, div.theme-light {
+    --background-color:#ffffff;
+    --background-dark:#f0f0f0;
+    --border-color:#a7a7a7;
+    --text-color:#282828;
+    --link-color:#625bdf;
+    --text-subtle:#666666;
+    --limit-background:#fff3cd;
+    --limit-text:#856404;
+    --error-color:#ff4444;
+}
+
+div.theme-dark {
+    --background-color:#101010;
+    --background-dark:#0b0b0b;
+    --border-color:#343434;
+    --text-color:#aab3e9;
+    --link-color:#799df8;
+    --text-subtle:#888888;
+    --limit-background:#4f5376;
+    --limit-text:#f1faff;
+    --error-color:#ff4444;
+}
+
+div.theme-hacker {
+    --background-color:#000000;
+    --background-dark:#000000;
+    --border-color:#1a221b;
+    --text-color:#00ff00;
+    --link-color:#00ff00;
+    --text-subtle:#00ff00;
+    --limit-background:#00ff00;
+    --limit-text:#000000;
+    --error-color:#ff4444;
+}
+
+div.theme-miku {
+    --background-color:#141417;
+    --background-dark:#0b0b0c;
+    --border-color:#362631;
+    --text-color:#00e5ff;
+    --link-color:#00f7ff;
+    --text-subtle:#db76b4;
+    --limit-background:#ff0088;
+    --limit-text:#fcfcfc;
+    --error-color:#fa6969;
+}

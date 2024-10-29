@@ -1,0 +1,49 @@
+@import "./variables.module.scss";
+
+.main {
+
+    @include main-container;
+
+    .header {
+        margin-top:10dvh;
+        padding:0 1rem;
+        @include flex-center-col;
+        text-align:center;
+        color:var(--text-color);
+    }
+
+    .boardsContainer {
+        border:1px solid var(--text-color);
+        margin:2rem 10rem;
+        padding:1rem;
+
+        margin-bottom:5rem;
+
+        @include flex-center-col;
+        gap:1rem;
+        align-items:flex-start;
+
+        a {
+            text-decoration:none;
+            color:var(--link-color);
+
+            h2 {
+                font-size:1.2rem;
+            }
+            p {
+                font-size:1rem;
+            }
+            h2,p {
+                margin:0;
+            }
+
+            &:hover {
+                text-decoration:underline;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            margin: 2rem 0.5rem;
+        }
+    }
+}

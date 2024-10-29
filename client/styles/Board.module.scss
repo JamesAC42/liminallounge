@@ -1,0 +1,99 @@
+@import "./variables.module.scss";
+
+.main {
+
+    @include main-container;
+
+    .boardHeader {
+        margin-top:8dvh;
+        @include flex-center-col;
+        text-align:center;
+        color:var(--text-color);
+
+        .boardHeaderButtons {
+            @include flex-center;
+            gap:1rem;
+            button {
+                @include button-style;
+            }
+        }
+    }
+
+    .threadForm {
+        @include form-style;
+    }
+
+    .threadList {
+        padding:1rem;
+        width:calc(100dvw - 2rem);
+        display:flex;
+        flex-direction:row;
+        flex-wrap:wrap;
+        justify-content:center;
+        gap:1rem;
+
+        margin-top:1rem;
+        margin-bottom:5rem;
+
+        .threadCard {
+
+            border:1px solid var(--border-color);
+            display:block;
+            background-color:var(--background-dark);
+            padding:1rem 1.5rem;
+            @include flex-center-col;
+
+            color:var(--text-color);
+            text-decoration:none;
+
+            font-family: 'Oxygen Mono', monospace;
+
+            h2,p {
+                margin:0;
+                font-size:1rem;
+                max-width:15rem;
+                overflow-wrap: break-word;
+                word-wrap: break-word;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                text-align:center;
+            }
+
+            .threadMeta {
+                @include flex-center;
+                gap:1rem;
+                margin-top:0.5rem;
+                span {
+                    font-size:0.8rem;
+                }
+            }
+
+            cursor:pointer;
+            &:hover {
+                background-color:var(--background-color);
+                transform:translateY(-2px);
+            }
+        }
+    }
+
+    .noThreads {
+        width:100%;
+        text-align:center;
+        margin-top:2rem;
+        color:var(--text-color);
+    }
+}
+
+.cooldown {
+    color: var(--error-color);
+    margin: 10px 0;
+    font-size: 0.9em;
+    text-align: center;
+}
+
+.themePickerOuter {
+    margin-right:1rem;
+    margin-top:2rem;
+    margin-bottom:4rem;
+}

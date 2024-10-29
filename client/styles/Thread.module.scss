@@ -1,0 +1,116 @@
+@import "./variables.module.scss";
+
+.main {
+    @include main-container;
+
+    .threadHeader {
+        margin-top:8dvh;
+        @include flex-center-col;
+        text-align:center;
+        color:var(--text-color);
+
+        .threadMeta {
+            @include flex-center;
+            gap:1rem;
+            padding:0 1rem;
+        }
+
+        .threadHeaderButtons {
+            margin-top:1rem;
+            @include flex-center;
+            gap:1rem;
+            & > button {
+                @include button-style;
+            }
+        }
+    }
+
+    .postForm {
+        @include form-style;
+        position:absolute;
+        right:0;
+        top:50%;
+        transform:translateY(-50%);
+        margin-right:1rem;
+
+        textarea {
+            resize:vertical;
+        }
+    }
+
+    .postList {
+        margin-top:2rem;
+        padding:0 1rem;
+        width:calc(100% - 2rem);
+
+        .post {
+            background:var(--background-dark);
+            padding:2rem;
+            width:fit-content;
+            border:1px solid var(--border-color);
+            color:var(--text-color);
+
+            max-width:calc(100% - 2rem);
+
+            word-wrap: break-word;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            font-size:0.9rem;
+            
+            .postHeader {
+                display:flex;
+                gap:1rem;
+                align-items:center;
+                font-size:0.9rem;
+                margin-bottom:0.5rem;
+
+                span.author {
+                    font-weight:bold;
+                    color:var(--link-color);
+                    font-size:1.1rem;
+                }
+
+                span.date {
+                    color:var(--text-subtle);
+                }
+            }
+
+            .postContent {
+                font-size:0.9rem;
+                white-space:pre-line;
+            }
+
+            &:not(:last-child) {
+                margin-bottom:0.5rem;
+            }
+        }
+    }
+}
+
+.replyLimit {
+  color: var(--text-subtle);
+  font-size: 0.9em;
+}
+
+.threadLocked {
+  background-color: var(--limit-background);
+  border: 1px solid var(--limit-background);
+  color: var(--limit-text);
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.cooldown {
+    color: var(--error-color);
+    margin: 10px 0;
+    font-size: 0.9em;
+    text-align: center;
+}
+
+.themePickerOuter {
+    margin-right:1rem;
+    margin-top:2rem;
+    margin-bottom:4rem;
+}

@@ -1,0 +1,45 @@
+@import "./variables.module.scss";
+
+.navbar {
+    position:fixed;
+    top:0;
+    left:0;
+    width:calc(100dvw - 1.2rem);
+    background-color:var(--background-color);
+
+    border-bottom:1px solid var(--border-color);
+
+    display:flex;
+
+    .boardLinks {
+        @include flex-center;
+        gap:1rem;
+
+        @media (max-width: 668px) {
+            display:none;
+        }
+    }
+
+    & > * {
+        margin:0 1rem;
+        display:flex;
+        a {
+            color:var(--link-color);
+            text-decoration:none;
+            padding:0.5rem 0;
+        }
+    }
+
+    .left {
+        margin-left:2.5rem;
+        .divider {
+            width:0.5rem;
+        }
+        gap:1rem;
+    }
+
+    .right {
+        margin-left:auto;
+        margin-right:2.5rem;
+    }
+}

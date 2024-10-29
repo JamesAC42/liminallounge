@@ -1,0 +1,42 @@
+[
+    {
+        "name": "random",
+        "description": "Random discussions about anything and everything."
+    },
+    {
+        "name": "science",
+        "description": "Discussions about science."
+    },
+    {
+        "name": "technology",
+        "description": "Discussions about technology."
+    },
+    {
+        "name": "literature",
+        "description": "Discussions about literature."
+    },
+    {
+        "name": "philosophy",
+        "description": "Discussions about philosophy."
+    },
+    {
+        "name": "video_games",
+        "description": "Discussions about video games."
+    },
+    {
+        "name": "music",
+        "description": "Discussions about music."
+    },
+    {
+        "name": "tv",
+        "description": "Discussions about television and movies."
+    },
+    {
+        "name": "food",
+        "description": "Discussions about food."
+    },
+    {
+        "name": "history",
+        "description": "Discussions about history."
+    }
+]
