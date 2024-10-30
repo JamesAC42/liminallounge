@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import openaiConfig from '../config/openai.json' assert { type: 'json' };
+import openaiConfig from '../config/openai.json' with { type: 'json' };
 
 const openai = new OpenAI({
     apiKey: openaiConfig.apiKey,

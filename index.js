@@ -3,10 +3,10 @@ import cors from 'cors';
 import boardRoutes from './controllers/boardController.js';
 import threadRoutes from './controllers/threadController.js';
 import { Board } from './SQL/models.js';
-import boardsData from './SQL/boards.json' assert { type: 'json' };
+import boardsData from './SQL/boards.json' with { type: 'json' };
 
 const app = express();
-const PORT = 3001;
+const PORT = 5030;
 
 app.use(cors());
 app.use(express.json());

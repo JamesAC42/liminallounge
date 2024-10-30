@@ -1,5 +1,5 @@
 import { Anthropic } from '@anthropic-ai/sdk';
-import anthropicConfig from '../config/anthropic.json' assert { type: 'json' };
+import anthropicConfig from '../config/anthropic.json' with { type: 'json' };
 
 const anthropic = new Anthropic({
   apiKey: anthropicConfig.apiKey,

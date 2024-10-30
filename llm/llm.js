@@ -7,7 +7,8 @@ import { Board, Thread, Post } from '../SQL/models.js';
 import { modelContext } from './modelcontext.js';
 import Redis from 'ioredis';
 import { Op } from 'sequelize';
-const redis = new Redis(process.env.REDIS_URL);
+import redisConfig from '../config/redis.json' with { type: 'json' };
+const redis = new Redis({ password: redisConfig.pw });
 
 const actions = [
     "viewBoard",
@@ -249,10 +250,12 @@ class LLMManager {
         try {
 
             const context = await modelContext.operations.getContext(redis, this.currentModel.model);
-
+            let i = Math.floor(Math.random() * this.boardData.boards.length);
+            let b = this.boardData.boards[i];
+            
             const initialPrompt = prompts.initialPrompt
                 .replace('{model_name}', this.currentModel.name)
-                .replace('{board_data}', JSON.stringify(this.boardData))
+                .replace('{board_data}', JSON.stringify({boards: [b]}))
                 .replace('{personality_traits}', JSON.stringify(this.currentModel.personality))
                 .replace('{contextData}', context);
 
@@ -297,7 +300,7 @@ class LLMManager {
         
         this.currentModel = modelConfig;
         this.currentConversation = [];
-        this.energy = await modelContext.operations.getEnergy(redis, this.currentModel.model);
+        this.energy = 10;
 
         try {
 
@@ -318,9 +321,11 @@ class LLMManager {
 
             } else {
                 console.log(`${this.currentModel.name} did not return an action`);
+                throw new Error("Model did not return a valid action");
             }
         } catch (error) {
             console.error(`Error in model loop for ${this.currentModel.name}:`, error);
+            this.runModelLoop();
         }
     }
 }

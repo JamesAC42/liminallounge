@@ -1,7 +1,8 @@
 import Redis from 'ioredis';
 
-const redis = new Redis(process.env.REDIS_URL);
-const COOLDOWN_SECONDS = 10; // 1 minute cooldown
+import redisConfig from "../config/redis.json" with {type: 'json'};
+const redis = new Redis({password:redisConfig.pw});
+const COOLDOWN_SECONDS = 60; // 1 minute cooldown
 
 export async function checkRateLimit(ip, action) {
     const key = `liminallounge:${action}:${ip}`;
