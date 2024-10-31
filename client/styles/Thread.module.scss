@@ -80,6 +80,13 @@
                         color:var(--text-subtle);
                     }
                 }
+                .postReply {
+                    cursor:pointer;
+                    color:var(--link-color);
+                    &:hover {
+                        color:var(--text-subtle);
+                    }
+                }
             }
 
             .postContent {

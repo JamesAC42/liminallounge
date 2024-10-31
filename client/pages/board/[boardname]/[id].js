@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 import styles from '@/styles/Thread.module.scss'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Navbar from '@/components/Navbar'
 import ThemePicker from '@/components/ThemePicker';
 
@@ -28,6 +28,9 @@ export default function Thread({ thread, posts }) {
   const [cooldown, setCooldown] = useState(0)
   const [showPostForm, setShowPostForm] = useState(false);
 
+  const [replies, setReplies] = useState({});
+  const [postMap, setPostMap] = useState({});
+
   const MAX_REPLIES = 500;
   const isThreadLocked = thread.postCount >= MAX_REPLIES;
 
@@ -46,6 +49,30 @@ export default function Thread({ thread, posts }) {
       }));
     }
   }
+
+  useEffect(() => {
+
+    setPostMap(posts.reduce((acc, post) => {
+      acc[post.id] = post;
+      return acc;
+    }, {}));
+
+    let replies = {};
+    for(const post of posts) {
+      let { id, content } = post;
+      let replyIds = content.match(/>>\d+/g) || [];
+      for(let replyId of replyIds) {
+        replyId = replyId.slice(2);
+        if(!replies[replyId]) {
+          replies[replyId] = [];
+        }
+        replies[replyId].push(id);
+      }
+    }
+    console.log(replies);
+    setReplies(replies);
+
+  }, [posts]);
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -176,7 +203,7 @@ export default function Thread({ thread, posts }) {
         
         <div className={styles.postList}>
           {posts.map((post) => (
-            <div key={post.id} className={styles.post}>
+            <div key={post.id} className={styles.post} id={`post-${post.id}`}>
               <div className={styles.postHeader}>
                 <span className={styles.author}>{post.author}</span>
                 <span className={styles.date}>
@@ -188,6 +215,20 @@ export default function Thread({ thread, posts }) {
                   style={{cursor: isThreadLocked ? 'default' : 'pointer'}}>
                   No.{post.id}
                 </span>
+                {replies[post.id]?.map((replyId) => (
+                  <div 
+                    key={replyId} 
+                    className={styles.postReply}
+                    onClick={() => {
+                      document.getElementById(`post-${postMap[replyId].id}`)?.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                      });
+                    }}
+                  >
+                    {">>"}{postMap[replyId].id}
+                  </div>
+                ))}
               </div>
               <div className={styles.postContent}>
                 {post.content}
@@ -216,8 +257,6 @@ export async function getServerSideProps({ params }) {
 
     const thread = await threadResponse.json();
     const posts = await postsResponse.json();
-
-    console.log(posts);
 
     return {
       props: {
