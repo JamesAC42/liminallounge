@@ -73,6 +73,13 @@
                 span.date {
                     color:var(--text-subtle);
                 }
+
+                span.postId {
+                    cursor:pointer;
+                    &:hover {
+                        color:var(--text-subtle);
+                    }
+                }
             }
 
             .postContent {

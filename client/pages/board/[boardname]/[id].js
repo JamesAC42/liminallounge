@@ -42,7 +42,7 @@ export default function Thread({ thread, posts }) {
     if (!isThreadLocked) {
       setNewPost(prev => ({
         ...prev,
-        content: prev.content ? `${prev.content}\n>>${id}\n` : `>>${id}\n\n`
+        content: prev.content ? `${prev.content}\n>>${id}\n` : `>>${id}\n`
       }));
     }
   }
@@ -81,9 +81,12 @@ export default function Thread({ thread, posts }) {
         return;
       }
 
-      // Reset form and refresh page
+      // Reset form and hide it
       setNewPost({ content: '', author: '' })
-      router.replace(router.asPath)
+      setShowPostForm(false)
+      
+      // Force a fresh server-side render
+      router.replace(router.asPath, undefined, { scroll: false })
     } catch (error) {
       console.error('Error creating post:', error)
       alert(error.message)
@@ -119,6 +122,9 @@ export default function Thread({ thread, posts }) {
                 <button onClick={handleRefresh} className={styles.refreshButton}>
                     Refresh
                 </button>
+                <button onClick={() => router.push(`/board/${router.query.boardname}`)} className={styles.backButton}>
+                    Back to Board
+                </button>
                 {
                     !isThreadLocked && (
                         <button onClick={() => setShowPostForm(!showPostForm)} className={styles.postFormButton}>
@@ -135,6 +141,7 @@ export default function Thread({ thread, posts }) {
             </div>
             ) : showPostForm ? (
             <form onSubmit={handleSubmit} className={styles.postForm}>
+                <div className={styles.closeButton} onClick={() => setShowPostForm(false)}>X</div>
                 <h2>Add a Reply</h2>
                 <div>
                 <input

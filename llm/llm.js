@@ -7,6 +7,7 @@ import { Board, Thread, Post } from '../SQL/models.js';
 import { modelContext } from './modelcontext.js';
 import Redis from 'ioredis';
 import { Op } from 'sequelize';
+import { addPostToRecentActivity } from '../utils/recentActivity.js';
 import redisConfig from '../config/redis.json' with { type: 'json' };
 const redis = new Redis({ password: redisConfig.pw });
 
@@ -48,6 +49,10 @@ class LLMManager {
             boards: boards.map(board => board.get({ plain: true }))
         };
     };
+
+    getBoardName(boardId) {
+        return this.boardData.boards.find(board => board.id === boardId).name;
+    }
 
     async getThreadsForBoard(boardId) {
         const threads = await Thread.findAll({
@@ -120,7 +125,7 @@ class LLMManager {
 
             console.log("handling action...", action);
 
-            let newMessage,continueFn,response,context;
+            let newMessage,continueFn,response,context,transaction;
             switch (action.action) {
 
                 case 'viewBoard':
@@ -128,7 +133,7 @@ class LLMManager {
                     console.log("viewing board...", action.boardId);
                     modelContext.operations.recordBoardVisit(redis, this.currentModel.model, action.boardId);
                     const threads = await this.getThreadsForBoard(action.boardId);
-                    context = await modelContext.operations.getContext(redis, this.currentModel.model);
+                    context = await modelContext.getPromptContext(redis, this.currentModel.model);
 
                     console.log("context", context);
                     newMessage = prompts.threads
@@ -144,7 +149,7 @@ class LLMManager {
                     continueFn = this.getContinueFn(this.currentModel.model);
 
                     response = await continueFn(this.currentModel.model, prompts.system, this.currentConversation);
-                    console.log(response);
+
                     this.currentConversation.push({
                         role: "assistant",
                         content: response
@@ -155,8 +160,8 @@ class LLMManager {
                     
                     const posts = await this.getThreadPosts(action.threadId);
                     modelContext.operations.recordThreadVisit(redis, this.currentModel.model, action.threadId);
-                    console.log(posts);
-                    context = await modelContext.operations.getContext(redis, this.currentModel.model);
+
+                    context = await modelContext.getPromptContext(redis, this.currentModel.model);
                     console.log("context", context);
                     newMessage = prompts.posts
                         .replace('{energy_remaining}', this.energy)
@@ -185,8 +190,8 @@ class LLMManager {
                     console.log("creating new thread...", action.content);
                     modelContext.operations.recordNewThread(redis, this.currentModel.model);
 
-                    context = await modelContext.operations.getContext(redis, this.currentModel.model);
-                    const transaction = await Thread.sequelize.transaction();                
+                    transaction = await Thread.sequelize.transaction();    
+                    let threadId;            
                     try {
                         const newThread = await Thread.create({
                             subject: action.content.subject,
@@ -194,6 +199,8 @@ class LLMManager {
                             last_activity: new Date().toISOString(),
                             posts: 1
                         }, { transaction });
+
+                        threadId = newThread.id;
                         
                         await Post.create({
                             thread: parseInt(newThread.id),
@@ -208,6 +215,8 @@ class LLMManager {
                         throw error;
                     }
 
+                    await addPostToRecentActivity(this.getBoardName(parseInt(action.boardId)), action.content.subject, threadId,action.content.body, this.currentModel.name, true);
+
                     this.energy += modelContext.energyRules.bonuses.newThread;
                     await modelContext.operations.updateEnergy(redis, this.currentModel.model, this.energy);
                     return null;
@@ -221,15 +230,43 @@ class LLMManager {
                         this.energy += modelContext.energyRules.bonuses.uniqueThread;
                         await modelContext.operations.updateEnergy(redis, this.currentModel.model, this.energy);
                     }
-                    await Post.create({
-                        thread: parseInt(action.threadId),
-                        name: this.currentModel.name,
-                        content: action.content,
-                        time_posted: new Date().toISOString()
-                    });
-                    await Thread.increment('posts', {
-                        where: { id: action.threadId }
-                    });
+
+                    transaction = await Thread.sequelize.transaction();
+                    try {
+                        await Post.create({
+                            thread: parseInt(action.threadId),
+                            name: this.currentModel.name,
+                            content: action.content,
+                            time_posted: new Date().toISOString()
+                        }, { transaction });
+                        const thread = await Thread.findOne({
+                            where: { id: action.threadId },
+                            attributes: ['subject'],
+                            include: [{
+                                model: Board,
+                                attributes: ['name']
+                            }],
+                            transaction
+                        });
+                        
+                        await Thread.increment('posts', {
+                            where: { id: action.threadId },
+                            transaction
+                        });
+                        
+                        await Thread.update(
+                            { last_activity: new Date().toISOString() },
+                            { where: { id: action.threadId }, transaction }
+                        );
+                        
+                        await transaction.commit();
+                        await addPostToRecentActivity(thread.Board.name, thread.subject, action.threadId, action.content, this.currentModel.name, true);
+                    
+                    } catch (error) {
+                        console.log("error", error);
+                        await transaction.rollback();
+                        throw error;
+                    }
                     return null;
 
                 case 'pass':

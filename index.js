@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import boardRoutes from './controllers/boardController.js';
 import threadRoutes from './controllers/threadController.js';
+import recentActivityRoutes from './controllers/recentActivityController.js';
 import { Board } from './SQL/models.js';
 import boardsData from './SQL/boards.json' with { type: 'json' };
 
@@ -38,6 +39,7 @@ initializeBoards();
 // Routes
 app.use('/api/boards', boardRoutes);
 app.use('/api/threads', threadRoutes);
+app.use('/api/recentActivity', recentActivityRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

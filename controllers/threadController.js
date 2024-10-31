@@ -2,7 +2,8 @@ import express from 'express';
 import { Thread, Post, Board } from '../SQL/models.js';
 import { checkRateLimit } from '../middleware/rateLimiter.js';
 import { moderateContent } from '../middleware/contentModeration.js';
-import { validateInput } from '../utils/inputValidation.js';
+import { sequelize } from '../SQL/database.js';
+import { addPostToRecentActivity } from '../utils/recentActivity.js';
 
 const router = express.Router();
 
@@ -87,68 +88,67 @@ async function createPost(req, res) {
     const MAX_REPLIES = 500;
     const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
-    // Validate input
-    const validation = validateInput(
-        { content, author },
-        {
-            content: {
-                maxLength: 2000,
-                noWhitespace: true,
-                preventXSS: true
-            },
-            author: {
-                optional: true,
-                maxLength: 100,
-                noWhitespace: true,
-                preventXSS: true
-            }
-        }
-    );
-
-    if (!validation.isValid) {
-        return res.status(400).json({ error: validation.error });
-    }
-
     try {
         // Check rate limit first
         try {
             await checkRateLimit(ip, 'post');
         } catch (error) {
-            console.log(error);
             return res.status(429).json({ 
                 error: error.message,
                 remainingTime: parseInt(error.message.match(/\d+/)[0])
             });
         }
 
-        const thread = await Thread.findOne({
-            where: { id: parseInt(id) },
-            include: 'Board'
-        });
+        // Start a transaction
+        const t = await sequelize.transaction();
 
-        if (!thread || thread.Board.name.toLowerCase() !== boardname.toLowerCase()) {
-            return res.status(404).json({ error: 'Thread not found' });
+        try {
+            const thread = await Thread.findOne({
+                where: { id: parseInt(id) },
+                include: 'Board',
+                transaction: t
+            });
+
+            if (!thread || thread.Board.name.toLowerCase() !== boardname.toLowerCase()) {
+                await t.rollback();
+                return res.status(404).json({ error: 'Thread not found' });
+            }
+
+            // Check if thread has reached reply limit
+            if (thread.posts >= MAX_REPLIES) {
+                await t.rollback();
+                return res.status(403).json({ error: 'Thread has reached maximum reply limit' });
+            }
+
+            // Create the new post
+            const newPost = await Post.create({
+                thread: thread.id,
+                content,
+                time_posted: new Date().toISOString(),
+                name: author || 'Anonymous'
+            }, { transaction: t });
+
+            // Update thread's post count and timestamp
+            await thread.update({
+                posts: thread.posts + 1,
+                last_activity: new Date().toISOString()
+            }, { transaction: t });
+
+            await t.commit();
+
+            await addPostToRecentActivity(boardname, thread.subject, thread.id,content, newPost.name, false);
+
+            // Return the formatted post data
+            res.status(201).json({
+                id: newPost.id,
+                content: newPost.content,
+                author: newPost.name,
+                createdAt: newPost.time_posted
+            });
+        } catch (error) {
+            await t.rollback();
+            throw error;
         }
-
-        // Check if thread has reached reply limit
-        if (thread.posts >= MAX_REPLIES) {
-            return res.status(403).json({ error: 'Thread has reached maximum reply limit' });
-        }
-
-        const newPost = await Post.create({
-            thread: thread.id,
-            content,
-            time_posted: new Date().toISOString(),  // Store as ISO string
-            name: author || 'Anonymous'
-        });
-
-        // Update thread's timestamp
-        await thread.update({
-            posts: thread.posts + 1,
-            last_activity: new Date().toISOString()  // Store as ISO string
-        });
-
-        res.status(201).json(newPost);
     } catch (error) {
         console.error('Error creating post:', error);
         res.status(500).json({ error: 'Internal server error' });

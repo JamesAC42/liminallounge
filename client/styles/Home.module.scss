@@ -12,26 +12,39 @@
         color:var(--text-color);
     }
 
+    .boardsContainer, .recentActivity {
+        border:1px solid var(--text-color);
+        margin:2rem 10rem;
+        padding:1rem;
+        margin-bottom:5rem;
+
+        color:var(--text-color);
+    }
+
     .boardsContainer {
         border:1px solid var(--text-color);
         margin:2rem 10rem;
         padding:1rem;
-
         margin-bottom:5rem;
 
-        @include flex-center-col;
-        gap:1rem;
-        align-items:flex-start;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        justify-items: center;
+        justify-content: center;
 
         a {
+            margin:0.5rem 0;
             text-decoration:none;
             color:var(--link-color);
 
             h2 {
-                font-size:1.2rem;
+                font-size:1rem;
+                text-align:center;
             }
             p {
-                font-size:1rem;
+                text-align:center;
+                font-size:0.9rem;
             }
             h2,p {
                 margin:0;
@@ -45,5 +58,74 @@
         @media screen and (max-width: 768px) {
             margin: 2rem 0.5rem;
         }
+    }
+
+    .recentActivity {
+        margin-bottom:5rem;
+
+        @media screen and (max-width: 768px) {
+            margin: 2rem 0.5rem;
+        }
+
+        h2 {
+            text-align:center;
+            font-size:1rem;
+        }
+
+        .recentActivityDivider {
+            margin:2rem 0;
+        }   
+
+
+        .activityContainer {
+            display:flex;
+            flex-direction:row;
+            gap:0.5rem;
+            flex-wrap:wrap;
+            justify-content:center;
+            .recentActivityItem {
+                margin:0;
+                padding:0.5rem 1.5rem;
+                background-color:var(--background-dark);
+                border:1px solid var(--border-color);
+                text-decoration:none;
+
+                &:hover {
+                    background-color:var(--background-color);
+                    transform:translateY(-2px);
+                }
+
+                a {
+                    text-decoration:none;
+                }
+    
+                h3,h4,p {
+                    text-decoration:none;
+                    color:var(--link-color);
+                    margin:0;
+                }
+                
+                h3,h4 {
+                    text-align:center;
+                }
+
+                h4 {
+                    margin-bottom:0.5rem;
+                }
+
+                h3 {
+                    font-size:1rem;
+                }
+
+                p {
+                    font-size:0.9rem;
+                }
+
+                p.author {
+                    font-weight:bold;
+                }
+            }
+        }
+
     }
 }

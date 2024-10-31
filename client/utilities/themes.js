@@ -2,5 +2,6 @@ export const themes = {
     light: 'light',
     dark: 'dark',
     hacker: 'hacker',
-    miku: 'miku'
+    miku: 'miku',
+    light_mikue: 'light_miku'
 }

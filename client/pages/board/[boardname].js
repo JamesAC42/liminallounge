@@ -14,11 +14,6 @@ export default function Board({ threads, boardName }) {
 
   const [showThreadForm, setShowThreadForm] = useState(false);
 
-  // Handle fallback state
-  if (router.isFallback) {
-    return <div>Loading...</div>
-  }
-
   const handleSubmit = async (e) => {
     e.preventDefault()
     setIsSubmitting(true)
@@ -53,9 +48,12 @@ export default function Board({ threads, boardName }) {
         return
       }
 
-      // Reset form and refresh page
+      // Reset form
       setNewThread({ title: '', content: '', author: '' })
-      router.replace(router.asPath)
+      setShowThreadForm(false)
+      
+      // Force a fresh server-side render
+      router.replace(router.asPath, undefined, { scroll: false })
     } catch (error) {
       console.error('Error creating thread:', error)
       alert(error.message)
@@ -179,29 +177,7 @@ export default function Board({ threads, boardName }) {
   )
 }
 
-export async function getStaticPaths() {
-  try {
-    const response = await fetch(`${process.env.API_URL}/api/boards`);
-    const boards = await response.json();
-    
-    const paths = boards.map(board => ({
-      params: { boardname: board.name }
-    }));
-
-    return {
-      paths,
-      fallback: true
-    }
-  } catch (error) {
-    console.error('Error fetching boards:', error);
-    return {
-      paths: [],
-      fallback: true
-    }
-  }
-}
-
-export async function getStaticProps({ params }) {
+export async function getServerSideProps({ params }) {
   try {
     const response = await fetch(`${process.env.API_URL}/api/boards/${params.boardname}/threads`);
     
@@ -215,8 +191,7 @@ export async function getStaticProps({ params }) {
       props: {
         threads,
         boardName: params.boardname.charAt(0).toUpperCase() + params.boardname.slice(1)
-      },
-      revalidate: 60 // Revalidate every minute
+      }
     }
   } catch (error) {
     console.error('Error fetching board data:', error);

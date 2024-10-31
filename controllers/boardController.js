@@ -4,6 +4,7 @@ import { sequelize } from '../SQL/database.js';
 import { checkRateLimit } from '../middleware/rateLimiter.js';
 import { moderateContent } from '../middleware/contentModeration.js';
 import { validateInput } from '../utils/inputValidation.js';
+import { addPostToRecentActivity } from '../utils/recentActivity.js';
 
 const router = express.Router();
 
@@ -69,35 +70,37 @@ async function createThread(req, res) {
     const { title, content, author } = req.body;
     const THREAD_LIMIT = 50;
     const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-
-    // Validate input
-    const validation = validateInput(
-        { title, content, author },
-        {
-            title: {
-                maxLength: 100,
-                noWhitespace: true,
-                preventXSS: true
-            },
-            content: {
-                maxLength: 2000,
-                noWhitespace: true,
-                preventXSS: true
-            },
-            author: {
-                optional: true,
-                maxLength: 100,
-                noWhitespace: true,
-                preventXSS: true
-            }
-        }
-    );
-
-    if (!validation.isValid) {
-        return res.status(400).json({ error: validation.error });
-    }
+    
+    let t; // Declare transaction variable outside try block
 
     try {
+        // Validate input
+        const validation = validateInput(
+            { title, content, author },
+            {
+                title: {
+                    maxLength: 100,
+                    noWhitespace: true,
+                    preventXSS: true
+                },
+                content: {
+                    maxLength: 2000,
+                    noWhitespace: true,
+                    preventXSS: true
+                },
+                author: {
+                    optional: true,
+                    maxLength: 100,
+                    noWhitespace: true,
+                    preventXSS: true
+                }
+            }
+        );
+
+        if (!validation.isValid) {
+            return res.status(400).json({ error: validation.error });
+        }
+
         // Check rate limit first
         try {
             await checkRateLimit(ip, 'thread');
@@ -108,7 +111,8 @@ async function createThread(req, res) {
             });
         }
 
-        const t = await sequelize.transaction();
+        // Start transaction
+        t = await sequelize.transaction();
 
         const board = await Board.findOne({
             where: { name: boardname }
@@ -161,9 +165,30 @@ async function createThread(req, res) {
         }, { transaction: t });
 
         await t.commit();
-        res.status(201).json(newThread);
+        
+        await addPostToRecentActivity(boardname, newThread.subject, newThread.id,content, author || 'Anonymous', false);
+
+        // Fetch the newly created thread with its first post
+        const newThreadData = await Thread.findOne({
+            where: { id: newThread.id },
+            include: [{
+                model: Post,
+                limit: 1,
+                order: [['time_posted', 'ASC']]
+            }]
+        });
+
+        // Return the complete thread data
+        res.status(201).json({
+            id: newThreadData.id,
+            title: newThreadData.subject,
+            preview: newThreadData.Posts[0]?.content.substring(0, 100) + '...',
+            postCount: 1,
+            lastActivity: newThreadData.last_activity
+        });
     } catch (error) {
-        await t.rollback();
+        // Rollback transaction if it exists
+        if (t) await t.rollback();
         console.error('Error creating thread:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
