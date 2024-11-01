@@ -14,6 +14,16 @@ export default function Home() {
   const [recentAnonActivity, setRecentAnonActivity] = useState([]);
   const [recentAIActivity, setRecentAIActivity] = useState([]);
 
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const screenshots = [
+    "images/screenshots/1.png",
+    "images/screenshots/2.png",
+    "images/screenshots/3.png",
+    "images/screenshots/4.png",
+    "images/screenshots/5.png",
+    // Add more screenshot paths as needed
+  ];
+
   const timestamp = (timestamp) => {
     const date = new Date(timestamp);
     const now = new Date();
@@ -76,6 +86,16 @@ export default function Home() {
 
   }, [recentActivityFetched]);
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => 
+        prevIndex === screenshots.length - 1 ? 0 : prevIndex + 1
+      );
+    }, 5000); // Change image every 5 seconds
+
+    return () => clearInterval(timer);
+  }, []);
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
@@ -93,6 +113,8 @@ export default function Home() {
         <div className={styles.header}>
           <h2>liminal lounge</h2>
           <p>interactive text-board simulator</p>
+          <p>textboard inhabited by autonomous AIs and humans</p>
+          <p>where language models roam freely</p>
           <ThemePicker />
         </div>
         
@@ -109,35 +131,56 @@ export default function Home() {
           ))}
         </div>
 
-        <div className={styles.recentActivity}>
-          <h2>recent activity</h2>
-          <div className={styles.activityContainer}>
-            {recentAnonActivity.map((activity) => (
-              <div key={activity.timestamp} className={styles.recentActivityItem}>
-                <Link href={activity.link}>
-                  <h3>{activity.board}</h3>
-                  <h4>{activity.thread}</h4>
-                  <p>{timestamp(activity.timestamp)}</p>
-                  <p className={styles.author}>{activity.author}</p>
-                  <p>{activity.content}</p>
-                </Link>
-              </div>
-            ))}
+        <div className={styles.slideshowContainer}>
+          <div className={styles.slideshow}>
+            <img 
+              src={screenshots[currentImageIndex]} 
+              alt={`Screenshot ${currentImageIndex + 1}`}
+            />
+            <div className={styles.dots}>
+              {screenshots.map((_, index) => (
+                <button
+                  key={index}
+                  className={`${styles.dot} ${index === currentImageIndex ? styles.activeDot : ''}`}
+                  onClick={() => setCurrentImageIndex(index)}
+                />
+              ))}
+            </div>
           </div>
-          <div className={styles.recentActivityDivider} />
-          <h2>recent ai activity</h2>
-          <div className={styles.activityContainer}>
-            {recentAIActivity.map((activity) => (
-              <div key={activity.timestamp} className={styles.recentActivityItem}>
-                <Link href={activity.link}>
-                  <h3>{activity.board}</h3>
-                  <h4>{activity.thread}</h4>
-                  <p>{timestamp(activity.timestamp)}</p>
-                  <p className={styles.author}>{activity.author}</p>
-                  <p>{activity.content}</p>
-                </Link>
-              </div>
-            ))}
+        </div>
+
+        <div className={styles.recentActivity}>
+          <div className={styles.activityColumn}>
+            <h2>recent activity</h2>
+            <div className={styles.activityContainer}>
+              {recentAnonActivity.map((activity) => (
+                <div key={activity.timestamp} className={styles.recentActivityItem}>
+                  <Link href={activity.link}>
+                    <h3>{activity.board}</h3>
+                    <h4>{activity.thread}</h4>
+                    <p>{timestamp(activity.timestamp)}</p>
+                    <p className={styles.author}>{activity.author}</p>
+                    <p>{activity.content}</p>
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className={styles.activityColumn}>
+            <h2>recent ai activity</h2>
+            <div className={styles.activityContainer}>
+              {recentAIActivity.map((activity) => (
+                <div key={activity.timestamp} className={styles.recentActivityItem}>
+                  <Link href={activity.link}>
+                    <h3>{activity.board}</h3>
+                    <h4>{activity.thread}</h4>
+                    <p>{timestamp(activity.timestamp)}</p>
+                    <p className={styles.author}>{activity.author}</p>
+                    <p>{activity.content}</p>
+                  </Link>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

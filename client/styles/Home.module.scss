@@ -10,6 +10,10 @@
         @include flex-center-col;
         text-align:center;
         color:var(--text-color);
+        p {
+            margin:0;
+            margin-bottom:0.5rem;
+        }
     }
 
     .boardsContainer, .recentActivity {
@@ -25,7 +29,7 @@
         border:1px solid var(--text-color);
         margin:2rem 10rem;
         padding:1rem;
-        margin-bottom:5rem;
+        margin-bottom:2rem;
 
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -63,69 +67,149 @@
     .recentActivity {
         margin-bottom:5rem;
 
+        display:flex;
+        flex-direction:row;
+        gap:1rem;
+
         @media screen and (max-width: 768px) {
-            margin: 2rem 0.5rem;
+            flex-direction:column;
         }
 
-        h2 {
-            text-align:center;
-            font-size:1rem;
-        }
+        .activityColumn {
+            flex-grow:1;
+            width:50%;
+            position:relative;
 
-        .recentActivityDivider {
-            margin:2rem 0;
-        }   
+            @media screen and (max-width: 768px) {
+                width:100%;
+            }
 
-
-        .activityContainer {
-            display:flex;
-            flex-direction:row;
-            gap:0.5rem;
-            flex-wrap:wrap;
-            justify-content:center;
-            .recentActivityItem {
-                margin:0;
-                padding:0.5rem 1.5rem;
-                background-color:var(--background-dark);
-                border:1px solid var(--border-color);
-                text-decoration:none;
-
-                &:hover {
-                    background-color:var(--background-color);
-                    transform:translateY(-2px);
-                }
-
-                a {
-                    text-decoration:none;
-                }
+            h2 {
+                text-align:center;
+                font-size:1.3rem;
+            }
     
-                h3,h4,p {
-                    text-decoration:none;
-                    color:var(--link-color);
+            .recentActivityDivider {
+                margin:2rem 0;
+            }   
+    
+    
+            .activityContainer {
+                display:flex;
+                flex-direction:row;
+                gap:0.5rem;
+                flex-wrap:wrap;
+                justify-content:center;
+                width:100%;
+
+                @include flex-center-col;
+                justify-content:flex-start;
+                align-items:stretch;
+                .recentActivityItem {
                     margin:0;
-                }
-                
-                h3,h4 {
-                    text-align:center;
-                }
-
-                h4 {
-                    margin-bottom:0.5rem;
-                }
-
-                h3 {
-                    font-size:1rem;
-                }
-
-                p {
-                    font-size:0.9rem;
-                }
-
-                p.author {
-                    font-weight:bold;
+                    padding:0.5rem 1.5rem;
+                    background-color:var(--background-dark);
+                    border:1px solid var(--border-color);
+                    text-decoration:none;
+    
+                    &:hover {
+                        background-color:var(--background-color);
+                        transform:translateY(-2px);
+                    }
+    
+                    a {
+                        text-decoration:none;
+                    }
+        
+                    h3,h4,p {
+                        text-decoration:none;
+                        color:var(--link-color);
+                        margin:0;
+                    }
+                    
+                    h3,h4 {
+                        text-align:center;
+                    }
+    
+                    h4 {
+                        margin-bottom:0.5rem;
+                    }
+    
+                    h3 {
+                        font-size:1rem;
+                    }
+    
+                    p {
+                        display: block;/* or inline-block */
+                        text-overflow: ellipsis;
+                        word-wrap: break-word;
+                        overflow: hidden;
+                        max-height: 3.6em;
+                        line-height: 1.2em;
+                    }
+    
+                    p.author {
+                        font-weight:bold;
+                    }
                 }
             }
         }
 
+        @media screen and (max-width: 768px) {
+            margin: 2rem 0.5rem;
+        }
+
+
+    }
+
+    .slideshowContainer {
+        margin: 2rem 10rem;
+        
+        @media screen and (max-width: 768px) {
+            margin: 2rem 0.5rem;
+        }
+    }
+
+    .slideshow {
+        position: relative;
+        width: 100%;
+        max-width: 650px;
+        margin: 0 auto;
+        
+        img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: opacity 0.5s ease-in-out;
+        }
+    }
+
+    .dots {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 10px;
+    }
+
+    .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: none;
+        background-color: rgba(255, 255, 255, 0.5);
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        padding: 0;
+
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+    }
+
+    .activeDot {
+        background-color: var(--text-color);
     }
 }
