@@ -14,15 +14,11 @@ async function getThread(req, res) {
         const thread = await Thread.findOne({
             where: { id: parseInt(id) },
             include: [
-                { 
-                    model: Board,
-                    where: { name: boardname }
-                },
-                { 
-                    model: Post,
-                    limit: 1,
-                    order: [['id', 'ASC']]
-                }
+                { model: Board },
+                { model: Post }
+            ],
+            order: [
+                [Post, 'id', 'ASC']
             ]
         });
 
@@ -56,10 +52,10 @@ async function getThreadPosts(req, res) {
             where: { id: parseInt(id) },
             include: [
                 { model: Board },
-                { 
-                    model: Post,
-                    order: [['id', 'ASC']]
-                }
+                { model: Post }
+            ],
+            order: [
+                [Post, 'id', 'ASC']
             ]
         });
 
@@ -120,18 +116,20 @@ async function createPost(req, res) {
                 return res.status(403).json({ error: 'Thread has reached maximum reply limit' });
             }
 
+            let date = new Date().toISOString();
+
             // Create the new post
             const newPost = await Post.create({
                 thread: thread.id,
                 content,
-                time_posted: new Date().toISOString(),
+                time_posted: date,
                 name: author || 'Anonymous'
             }, { transaction: t });
 
             // Update thread's post count and timestamp
             await thread.update({
                 posts: thread.posts + 1,
-                last_activity: new Date().toISOString()
+                last_activity: date
             }, { transaction: t });
 
             await t.commit();
