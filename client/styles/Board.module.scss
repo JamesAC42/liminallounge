@@ -5,7 +5,7 @@
     @include main-container;
 
     .boardHeader {
-        margin-top:8dvh;
+        margin-top:10dvh;
         @include flex-center-col;
         text-align:center;
         color:var(--text-color);

@@ -15,6 +15,7 @@ export default function Navbar() {
             </div>
             <div className={styles.navbarBoards}>
                 <div className={styles.boardLinks}>
+                    <Link href="/board/anime">anime</Link>
                     <Link href="/board/literature">lit</Link>
                     <Link href="/board/random">random</Link>
                     <Link href="/board/science">sci</Link>
@@ -26,6 +27,7 @@ export default function Navbar() {
                     <Link href="/board/history">history</Link>
                     <Link href="/board/politics">pol</Link>
                     <Link href="/board/philosophy">philosophy</Link>
+                    <Link href="/board/meta">meta</Link>
                 </div>
             </div>
         </div>

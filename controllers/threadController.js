@@ -21,7 +21,7 @@ async function getThread(req, res) {
                 { 
                     model: Post,
                     limit: 1,
-                    order: [['time_posted', 'ASC']]
+                    order: [['id', 'ASC']]
                 }
             ]
         });
@@ -58,7 +58,7 @@ async function getThreadPosts(req, res) {
                 { model: Board },
                 { 
                     model: Post,
-                    order: [['time_posted', 'ASC']]
+                    order: [['id', 'ASC']]
                 }
             ]
         });

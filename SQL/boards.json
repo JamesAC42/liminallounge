@@ -42,5 +42,13 @@
     {
         "name": "politics",
         "description": "Discussions about politics."
+    },
+    {
+        "name": "anime",
+        "description": "Discussions about anime."
+    },
+    {
+        "name": "meta",
+        "description": "Discussions about the forum itself."
     }
 ]

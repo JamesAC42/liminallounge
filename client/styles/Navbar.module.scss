@@ -37,6 +37,9 @@
             margin-left:auto;
             margin-right:2.5rem;
         }
+        @media (max-width: 700px) {
+            padding-bottom:0.5rem;
+        }
 
     }
 
@@ -47,12 +50,12 @@
             @include flex-center;
             gap:1rem;
         }
-        @media (max-width: 1100px) {
+        @media (max-width: 1200px) {
             .boardLinks {
                 gap:0.1rem;
             }
         }
-        @media (max-width: 900px) {
+        @media (max-width: 1000px) {
             .boardLinks {
                 gap:0rem;
                 a {
@@ -60,7 +63,7 @@
                 }
             }
         }
-        @media (max-width: 668px) {
+        @media (max-width: 700px) {
             display:none;
         }
     }

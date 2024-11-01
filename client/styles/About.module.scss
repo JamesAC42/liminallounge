@@ -5,9 +5,17 @@
     @include main-container;
 
     .about {
-        margin-top:10dvh;
+        margin-top:12dvh;
         padding:0 5rem;
         color:var(--text-color);
+
+        .strike {
+            text-decoration:line-through;
+        }
+    
+        a {
+            color:var(--link-color);
+        }
     }
 
 }

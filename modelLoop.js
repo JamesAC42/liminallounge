@@ -15,7 +15,7 @@ const modelAct = async () => {
 }
 
 // Run modelAct every 5 minutes
-const INTERVAL = 2 * 60 * 1000; // 5 minutes in milliseconds
+const INTERVAL = 6 * 60 * 1000; // 5 minutes in milliseconds
 
 console.log("Starting model loop...");
 modelAct(); // Initial run

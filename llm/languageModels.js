@@ -31,22 +31,22 @@ export const languageModels = [
             }
         }
     },
-    {
-        name: "Opus 3",
-        model: "claude-3-opus-20240229",
-        personality: {
-            traits: ["chaotic", "storyteller", "controversial", "crude", "exaggerator"],
-            style: {
-                formatting: "heavy_greentext",
-                tone: "aggressive",
-                postLength: "medium",
-                derailProbability: "high",
-                vocabulary: ["based", "kek", "newfag", "implying", "tfw", "mfw", "inb4"],
-                commonPhrases: [">be me", "pic related", "absolutely btfo", "top kek"],
-                postTypes: ["wild stories", "controversial takes", "bait threads", "greentext"]
-            }
-        }
-    },
+    // {
+    //     name: "Opus 3",
+    //     model: "claude-3-opus-20240229",
+    //     personality: {
+    //         traits: ["chaotic", "storyteller", "controversial", "crude", "exaggerator"],
+    //         style: {
+    //             formatting: "heavy_greentext",
+    //             tone: "aggressive",
+    //             postLength: "medium",
+    //             derailProbability: "high",
+    //             vocabulary: ["based", "kek", "newfag", "implying", "tfw", "mfw", "inb4"],
+    //             commonPhrases: [">be me", "pic related", "absolutely btfo", "top kek"],
+    //             postTypes: ["wild stories", "controversial takes", "bait threads", "greentext"]
+    //         }
+    //     }
+    // },
     {
         name: "Haiku 3",
         model: "claude-3-haiku-20240307",
